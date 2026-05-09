@@ -19,6 +19,9 @@ jobs:
       id-token: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
@@ -27,6 +30,22 @@ jobs:
 
       - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and push image
+        run: |
+          PROJECT="${{ vars.GCP_PROJECT_ID || secrets.GCP_PROJECT_ID }}"
+          if [ -z "$PROJECT" ]; then
+            echo "GCP_PROJECT_ID nao definido (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+          IMAGE="us-central1-docker.pkg.dev/${PROJECT}/livraria/api:${{ github.sha }}"
+          LATEST="us-central1-docker.pkg.dev/${PROJECT}/livraria/api:latest"
+
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          docker build -t "$IMAGE" -t "$LATEST" .
+          docker push "$IMAGE"
+          docker push "$LATEST"
 
       - name: Deploy staging service
         run: |
@@ -65,6 +84,9 @@ jobs:
       id-token: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
@@ -73,6 +95,22 @@ jobs:
 
       - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and push image
+        run: |
+          PROJECT="${{ vars.GCP_PROJECT_ID || secrets.GCP_PROJECT_ID }}"
+          if [ -z "$PROJECT" ]; then
+            echo "GCP_PROJECT_ID nao definido (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+          IMAGE="us-central1-docker.pkg.dev/${PROJECT}/livraria/api:${{ github.sha }}"
+          LATEST="us-central1-docker.pkg.dev/${PROJECT}/livraria/api:latest"
+
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          docker build -t "$IMAGE" -t "$LATEST" .
+          docker push "$IMAGE"
+          docker push "$LATEST"
 
       - name: Deploy production service
         run: |
