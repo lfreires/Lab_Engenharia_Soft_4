@@ -72,7 +72,7 @@ jobs:
             --cpu 1 \
             --service-account "$RUNTIME_SA" \
             --update-secrets JWT_SECRET=livraria-jwt-secret:latest \
-            --set-env-vars "APP_ENV=staging,PERSISTENCE_BACKEND=firestore,FIRESTORE_PROJECT_ID=${PROJECT},FIRESTORE_DATABASE=firabase-livraria,LOG_LEVEL=INFO,CORS_ALLOWED_ORIGINS=https://lab-engenharia-soft-4.vercel.app\,http://localhost:3000\,http://localhost:8080"
+            --set-env-vars "^|^APP_ENV=staging|PERSISTENCE_BACKEND=firestore|FIRESTORE_PROJECT_ID=${PROJECT}|FIRESTORE_DATABASE=firabase-livraria|LOG_LEVEL=INFO|CORS_ALLOWED_ORIGINS=https://lab-engenharia-soft-4.vercel.app,http://localhost:3000,http://localhost:8080"
 
   deploy-production:
     name: Deploy production (tag)
@@ -137,4 +137,4 @@ jobs:
             --cpu 1 \
             --service-account "$RUNTIME_SA" \
             --update-secrets JWT_SECRET=livraria-jwt-secret:latest \
-            --set-env-vars "APP_ENV=production,PERSISTENCE_BACKEND=firestore,FIRESTORE_PROJECT_ID=${PROJECT},FIRESTORE_DATABASE=firabase-livraria,LOG_LEVEL=INFO,CORS_ALLOWED_ORIGINS=https://lab-engenharia-soft-4.vercel.app\,http://localhost:3000\,http://localhost:8080"
+            --set-env-vars "^|^APP_ENV=production|PERSISTENCE_BACKEND=firestore|FIRESTORE_PROJECT_ID=${PROJECT}|FIRESTORE_DATABASE=firabase-livraria|LOG_LEVEL=INFO|CORS_ALLOWED_ORIGINS=https://lab-engenharia-soft-4.vercel.app,http://localhost:3000,http://localhost:8080"
