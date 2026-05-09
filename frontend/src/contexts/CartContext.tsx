@@ -10,6 +10,7 @@ interface CartContextType {
   createCart: () => Promise<void>;
   addToCart: (bookId: string, quantity: number) => Promise<void>;
   removeFromCart: (bookId: string) => Promise<void>;
+  clearCart: () => void;
   clearError: () => void;
 }
 
@@ -95,6 +96,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const clearError = () => setError(null);
+  const clearCart = () => {
+    setCart(null);
+    localStorage.removeItem('cartId');
+  };
 
   return (
     <CartContext.Provider
@@ -105,6 +110,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         createCart,
         addToCart,
         removeFromCart,
+        clearCart,
         clearError,
       }}
     >

@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 type PaymentMethod = 'pix' | 'card' | 'cash';
 
 export function Checkout() {
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart();
   const navigate = useNavigate();
 
   const [couponCode, setCouponCode] = useState('');
@@ -60,7 +60,7 @@ export function Checkout() {
         coupon_code: couponCode || undefined,
       });
       setSuccess(true);
-      localStorage.removeItem('cartId');
+      clearCart();
       toast.success('Pedido realizado com sucesso!');
 
       setTimeout(() => {
