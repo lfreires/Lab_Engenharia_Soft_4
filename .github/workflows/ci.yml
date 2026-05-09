@@ -40,5 +40,5 @@ jobs:
         run: pytest --cov=livraria --cov-report=term-missing --cov-fail-under=80
         env:
           APP_ENV: test
-          DATABASE_URL: sqlite:///:memory:
-          JWT_SECRET: ci-test-secret-key-at-least-32-bytes!!
+          DATABASE_URL: "sqlite:///:memory:"
+          JWT_SECRET: "ci-test-secret-key-at-least-32-bytes!!"
