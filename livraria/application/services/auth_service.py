@@ -19,7 +19,7 @@ class AuthService:
         if record is None:
             return False
         _, stored_hash = record
-        return stored_hash == User.hash_password(password)
+        return User.verify_password(password, stored_hash)
 
     def exists(self, username: str) -> bool:
         return self._repo.exists(username)

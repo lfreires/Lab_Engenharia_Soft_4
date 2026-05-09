@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hashlib import sha256
+import bcrypt
 
 
 class User:
@@ -13,4 +13,8 @@ class User:
 
     @staticmethod
     def hash_password(password: str) -> str:
-        return sha256(password.encode("utf-8")).hexdigest()
+        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    @staticmethod
+    def verify_password(password: str, hashed: str) -> bool:
+        return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))

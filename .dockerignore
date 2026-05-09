@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.whl
+
+# Testes e documentação (desnecessários na imagem de produção)
+tests/
+docs/
+
+# Dados de runtime (gerados em execução, não pertencem à imagem)
+data/
+
+# Configuração local e segredos
+.env
+.env.*
+!.env.example
+
+# Controle de versão
+.git/
+.gitignore
+.gitattributes
+
+# IDEs e ferramentas locais
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+
+# Docker (a imagem não precisa de si mesma)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Cache de ferramentas
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Logs e temporários
+*.log
+tmp/
+temp/
+
+# CI/CD (desnecessário na imagem)
+.github/

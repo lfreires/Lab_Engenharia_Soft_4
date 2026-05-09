@@ -18,5 +18,8 @@ class BookService:
     def list_all(self) -> list[Book]:
         return self._repo.all()
 
+    def get_by_id(self, book_id: str) -> Book:
+        return self._repo.find(book_id)
+
     def get_stock(self, book_id: str) -> int:
         return self._repo.find(book_id).stock

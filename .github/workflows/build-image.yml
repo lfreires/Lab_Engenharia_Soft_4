@@ -1,0 +1,54 @@
+name: Build & Push Image
+
+# Dispara apenas em push para main (após PRs aprovados e CI verde).
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+
+env:
+  REGISTRY: us-central1-docker.pkg.dev
+  IMAGE_PATH: us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/livraria/api
+
+jobs:
+  build-push:
+    name: Build Docker image → Artifact Registry
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write  # Necessário para Workload Identity Federation
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Autenticação sem chave JSON — usa OIDC token do GitHub + WIF
+      - name: Authenticate to Google Cloud (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+      - name: Build image
+        run: |
+          docker build \
+            --tag ${{ env.IMAGE_PATH }}:${{ github.sha }} \
+            --tag ${{ env.IMAGE_PATH }}:latest \
+            --label "git-commit=${{ github.sha }}" \
+            --label "git-ref=${{ github.ref_name }}" \
+            .
+
+      - name: Push image
+        run: |
+          docker push ${{ env.IMAGE_PATH }}:${{ github.sha }}
+          docker push ${{ env.IMAGE_PATH }}:latest
+
+      - name: Output image digest
+        run: |
+          echo "Image pushed:"
+          echo "  ${{ env.IMAGE_PATH }}:${{ github.sha }}"
+          echo "  ${{ env.IMAGE_PATH }}:latest"

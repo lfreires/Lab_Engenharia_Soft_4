@@ -6,7 +6,9 @@ class OrderController:
     def __init__(self, service: CheckoutService) -> None:
         self._service = service
 
-    def checkout(self, cart_id: str, payment_method: str = "pix", coupon_code: str | None = None) -> Order:
+    def checkout(
+        self, cart_id: str, payment_method: str = "pix", coupon_code: str | None = None
+    ) -> Order:
         return self._service.checkout(cart_id, payment_method, coupon_code)
 
     def preview_discount(self, cart_total: float, coupon_code: str) -> tuple[float, float]:

@@ -70,7 +70,9 @@ class CheckoutService:
                 self._books.reserve_stock(item.book_id, item.quantity)
             self._orders.save(order_id, total, "created", coupon_code)
             self._orders.save_items(order_id, order_items)
-            payment = Payment(order_id=order_id, amount=total, method=payment_method, status="approved")
+            payment = Payment(
+                order_id=order_id, amount=total, method=payment_method, status="approved"
+            )
             self._payments.save(payment)
             if coupon and coupon.single_use:
                 self._coupons.mark_used(coupon_code)
@@ -97,4 +99,3 @@ class CheckoutService:
         coupon.validate()
         discounted = coupon.apply(cart_total)
         return discounted, round(cart_total - discounted, 2)
-

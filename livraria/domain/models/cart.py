@@ -36,6 +36,5 @@ class Cart:
                     f"disponível para adicionar: {book_stock - current}."
                 )
             raise ValueError(
-                f"Quantidade indisponível para '{book_title}'. "
-                f"Estoque atual: {book_stock}."
+                f"Quantidade indisponível para '{book_title}'. Estoque atual: {book_stock}."
             )
