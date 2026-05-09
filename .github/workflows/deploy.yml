@@ -58,6 +58,14 @@ jobs:
           IMAGE="us-central1-docker.pkg.dev/${PROJECT}/livraria/api:${{ github.sha }}"
           SERVICE="livraria-api-staging"
           RUNTIME_SA="livraria-api-runtime@${PROJECT}.iam.gserviceaccount.com"
+          cat > cloudrun-env-staging.yaml <<EOF
+          APP_ENV: "staging"
+          PERSISTENCE_BACKEND: "firestore"
+          FIRESTORE_PROJECT_ID: "${PROJECT}"
+          FIRESTORE_DATABASE: "firabase-livraria"
+          LOG_LEVEL: "INFO"
+          CORS_ALLOWED_ORIGINS: "https://lab-engenharia-soft-4.vercel.app,http://localhost:3000,http://localhost:8080"
+          EOF
 
           gcloud run deploy "$SERVICE" \
             --project "$PROJECT" \
@@ -72,7 +80,7 @@ jobs:
             --cpu 1 \
             --service-account "$RUNTIME_SA" \
             --update-secrets JWT_SECRET=livraria-jwt-secret:latest \
-            --set-env-vars "^|^APP_ENV=staging|PERSISTENCE_BACKEND=firestore|FIRESTORE_PROJECT_ID=${PROJECT}|FIRESTORE_DATABASE=firabase-livraria|LOG_LEVEL=INFO|CORS_ALLOWED_ORIGINS=https://lab-engenharia-soft-4.vercel.app,http://localhost:3000,http://localhost:8080"
+            --env-vars-file cloudrun-env-staging.yaml
 
   deploy-production:
     name: Deploy production (tag)
@@ -123,6 +131,14 @@ jobs:
           IMAGE="us-central1-docker.pkg.dev/${PROJECT}/livraria/api:${{ github.sha }}"
           SERVICE="livraria-api-prod"
           RUNTIME_SA="livraria-api-runtime@${PROJECT}.iam.gserviceaccount.com"
+          cat > cloudrun-env-production.yaml <<EOF
+          APP_ENV: "production"
+          PERSISTENCE_BACKEND: "firestore"
+          FIRESTORE_PROJECT_ID: "${PROJECT}"
+          FIRESTORE_DATABASE: "firabase-livraria"
+          LOG_LEVEL: "INFO"
+          CORS_ALLOWED_ORIGINS: "https://lab-engenharia-soft-4.vercel.app,http://localhost:3000,http://localhost:8080"
+          EOF
 
           gcloud run deploy "$SERVICE" \
             --project "$PROJECT" \
@@ -137,4 +153,4 @@ jobs:
             --cpu 1 \
             --service-account "$RUNTIME_SA" \
             --update-secrets JWT_SECRET=livraria-jwt-secret:latest \
-            --set-env-vars "^|^APP_ENV=production|PERSISTENCE_BACKEND=firestore|FIRESTORE_PROJECT_ID=${PROJECT}|FIRESTORE_DATABASE=firabase-livraria|LOG_LEVEL=INFO|CORS_ALLOWED_ORIGINS=https://lab-engenharia-soft-4.vercel.app,http://localhost:3000,http://localhost:8080"
+            --env-vars-file cloudrun-env-production.yaml
