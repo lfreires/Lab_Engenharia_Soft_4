@@ -1,6 +1,6 @@
 # Livraria - Arquitetura Cliente-Servidor
 
-## 1) Objetivo
+## 1) Visao geral
 
 Este projeto implementa um sistema de livraria em arquitetura cliente-servidor, com:
 
