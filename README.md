@@ -1,8 +1,8 @@
-# Lab Engenharia de Software 4 - Livraria (Cliente-Servidor)
+# Livraria - Arquitetura Cliente-Servidor
 
 ## 1) Objetivo
 
-Implementar um sistema de livraria em arquitetura cliente-servidor, com:
+Este projeto implementa um sistema de livraria em arquitetura cliente-servidor, com:
 
 - frontend web para uso do sistema
 - backend REST para regras de negocio
@@ -58,7 +58,7 @@ npm run dev
 
 Obs.: configurar `VITE_API_BASE_URL` para o backend desejado (local ou staging).
 
-## 6) Como validar rapidamente (roteiro de demonstracao)
+## 6) Como validar rapidamente (smoke test)
 
 1. Registrar usuario
 2. Fazer login
@@ -83,4 +83,3 @@ Obs.: configurar `VITE_API_BASE_URL` para o backend desejado (local ou staging).
 - `docs/architecture/cliente-servidor.md`
 - `docs/architecture/steps-cliente-servidor.md`
 - `docs/architecture/gcp-setup.md`
-
