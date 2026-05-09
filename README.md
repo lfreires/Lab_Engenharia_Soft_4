@@ -1,267 +1,86 @@
-# Lab Engenharia Soft 4 - Livraria (Cliente-Servidor)
+# Lab Engenharia de Software 4 - Livraria (Cliente-Servidor)
 
-Projeto academico de uma livraria com arquitetura cliente-servidor:
+## 1) Objetivo
 
-- Backend: FastAPI (Python), JWT, persistencia SQL/Firestore
-- Frontend: React + Vite
-- Deploy: GitHub Actions + Google Cloud Run (API) + Vercel (frontend)
+Implementar um sistema de livraria em arquitetura cliente-servidor, com:
 
-## Links do projeto
+- frontend web para uso do sistema
+- backend REST para regras de negocio
+- autenticacao com JWT
+- persistencia em Firestore (opcao B)
+- deploy em nuvem com pipeline CI/CD
+
+## 2) Arquitetura do projeto
+
+- Frontend: React + Vite (`frontend/`)
+- Backend: FastAPI (`livraria/api`)
+- Camadas (Clean Architecture):
+  - `domain`: entidades e contratos
+  - `application/services`: casos de uso
+  - `infrastructure`: repositorios SQL/Firestore
+  - `api`: rotas, schemas e autenticacao
+
+## 3) Funcionalidades implementadas
+
+- cadastro e login de usuario
+- listagem e cadastro de livros
+- criacao e gerenciamento de carrinho
+- aplicacao de cupom (preview de desconto)
+- checkout com baixa de estoque
+
+## 4) Links de deploy
 
 - Frontend (Vercel): [https://lab-engenharia-soft-4.vercel.app](https://lab-engenharia-soft-4.vercel.app)
 - Backend staging (Cloud Run): [https://livraria-api-staging-jar2vmuxea-uc.a.run.app](https://livraria-api-staging-jar2vmuxea-uc.a.run.app)
-- Swagger (staging): [https://livraria-api-staging-jar2vmuxea-uc.a.run.app/docs](https://livraria-api-staging-jar2vmuxea-uc.a.run.app/docs)
+- Swagger da API: [https://livraria-api-staging-jar2vmuxea-uc.a.run.app/docs](https://livraria-api-staging-jar2vmuxea-uc.a.run.app/docs)
 
-## Arquitetura
+## 5) Como executar localmente
 
-O backend segue Clean Architecture:
-
-- `livraria/domain`: entidades e contratos (ports)
-- `livraria/application/services`: casos de uso
-- `livraria/infrastructure`: repositorios (SQL e Firestore), UoW, DB
-- `livraria/api`: FastAPI, rotas, schemas, dependencia de auth
-
-Frontend:
-
-- `frontend/src/api`: client HTTP e services
-- `frontend/src/contexts`: auth/cart state global
-- `frontend/src/app/pages`: telas da aplicacao
-
-## Funcionalidades
-
-- Cadastro e login com JWT
-- Listagem e cadastro de livros
-- Carrinho de compras (criar, adicionar/remover item)
-- Preview de desconto por cupom
-- Checkout com metodos `pix`, `card`, `cash`
-- Baixa de estoque apos pedido
-
-## Estrutura de pastas (resumo)
-
-```text
-.
-|-- .github/workflows/
-|   |-- ci.yml
-|   |-- build-image.yml
-|   `-- deploy.yml
-|-- docs/architecture/
-|-- frontend/
-|-- livraria/
-|-- tests/
-|-- Dockerfile
-`-- pyproject.toml
-```
-
-## Requisitos
-
-- Python 3.12+ (desenvolvimento)
-- Node.js 20+ (frontend)
-- npm
-
-## Backend local
-
-1. Criar venv e instalar dependencias:
+### Backend
 
 ```bash
 pip install -e ".[dev]"
-```
-
-2. Copiar variaveis:
-
-```bash
 cp .env.example .env
-```
-
-3. Subir API:
-
-```bash
 uvicorn livraria.api.main:app --reload
 ```
 
-4. Testar:
+API local:
+- `http://localhost:8000/health`
+- `http://localhost:8000/docs`
 
-- Health: `http://localhost:8000/health`
-- Swagger: `http://localhost:8000/docs`
-
-## Frontend local
-
-1. Entrar na pasta:
+### Frontend
 
 ```bash
 cd frontend
-```
-
-2. Instalar dependencias:
-
-```bash
 npm install
-```
-
-3. Criar `.env` local (ou ajustar o existente):
-
-```env
-VITE_API_BASE_URL=http://localhost:8000
-```
-
-4. Rodar:
-
-```bash
 npm run dev
 ```
 
-5. Build:
+Obs.: configurar `VITE_API_BASE_URL` para o backend desejado (local ou staging).
 
-```bash
-npm run build
-```
+## 6) Como validar rapidamente (roteiro de demonstracao)
 
-## Variaveis de ambiente
+1. Registrar usuario
+2. Fazer login
+3. Listar livros
+4. Adicionar livro ao carrinho
+5. Aplicar cupom (opcional)
+6. Finalizar pedido
+7. Confirmar reducao de estoque
+8. Confirmar carrinho limpo apos checkout
 
-### Backend (`.env`)
+## 7) Qualidade e CI/CD
 
-Principais campos:
+- CI com GitHub Actions:
+  - lint (`ruff check`, `ruff format --check`)
+  - testes com cobertura
+- Deploy automatico:
+  - push em `main` -> staging no Cloud Run
+  - tags `v*.*.*` -> producao
 
-- `APP_ENV=local|test|staging|production`
-- `PERSISTENCE_BACKEND=sql|firestore`
-- `DATABASE_URL=...` (quando `sql`)
-- `FIRESTORE_PROJECT_ID=...` (quando `firestore`)
-- `FIRESTORE_DATABASE=...`
-- `JWT_SECRET=...`
-- `CORS_ALLOWED_ORIGINS=...`
-
-Observacao:
-
-- Para `CORS_ALLOWED_ORIGINS`, em ambiente Cloud Run estamos usando JSON string (lista) para compatibilidade com `pydantic-settings`.
-
-### Frontend (`frontend/.env`)
-
-- `VITE_API_BASE_URL=https://livraria-api-staging-jar2vmuxea-uc.a.run.app`
-
-## Endpoints principais
-
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `GET /api/v1/books`
-- `POST /api/v1/books`
-- `GET /api/v1/books/{id}`
-- `POST /api/v1/carts`
-- `POST /api/v1/carts/{id}/items`
-- `GET /api/v1/carts/{id}`
-- `DELETE /api/v1/carts/{id}/items/{book_id}`
-- `POST /api/v1/orders/preview-discount`
-- `POST /api/v1/orders/checkout`
-- `GET /health`
-
-## Qualidade e testes
-
-### Lint e format
-
-```bash
-ruff check .
-ruff format --check .
-```
-
-### Testes
-
-```bash
-pytest --cov=livraria --cov-report=term-missing --cov-fail-under=80
-```
-
-## Docker
-
-Build:
-
-```bash
-docker build -t livraria-api .
-```
-
-Run:
-
-```bash
-docker run --rm -p 8080:8080 --env-file .env livraria-api
-```
-
-## CI/CD
-
-### Workflows
-
-- [ci.yml](.github/workflows/ci.yml)
-- [build-image.yml](.github/workflows/build-image.yml)
-- [deploy.yml](.github/workflows/deploy.yml)
-
-### Fluxo
-
-1. Push em `main`:
-   - roda CI
-   - build/push da imagem
-   - deploy em `livraria-api-staging`
-2. Tag `v*.*.*`:
-   - deploy em `livraria-api-prod`
-
-### Secrets/variables no GitHub
-
-- Secret `WIF_PROVIDER`
-- Secret `WIF_SERVICE_ACCOUNT`
-- Variable (ou Secret) `GCP_PROJECT_ID`
-
-### Pre-requisitos no GCP
-
-- Artifact Registry repo `livraria` em `us-central1`
-- Cloud Run habilitado
-- Firestore em Native mode
-- Secret Manager com `livraria-jwt-secret`
-- Service accounts com IAM minimo necessario
-
-## Deploy do frontend (Vercel)
-
-Config recomendada no Vercel:
-
-- Root Directory: `frontend`
-- Framework Preset: `Vite`
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Env var: `VITE_API_BASE_URL=https://livraria-api-staging-jar2vmuxea-uc.a.run.app`
-
-## Troubleshooting rapido
-
-### CORS bloqueando no browser
-
-Sintoma:
-- erro de preflight e `No 'Access-Control-Allow-Origin' header`
-
-Checklist:
-- garantir dominio do frontend em `CORS_ALLOWED_ORIGINS`
-- confirmar deploy da revisao nova no Cloud Run
-
-### Container do Cloud Run nao sobe (PORT 8080)
-
-Sintoma:
-- `failed to start and listen on the port defined by PORT=8080`
-
-Checklist:
-- revisar logs da revisao no Cloud Run
-- validar variaveis de ambiente obrigatorias
-- validar formato de variaveis complexas (ex.: CORS em JSON string)
-
-## Versionamento (tag e release)
-
-Exemplo para marcar entrega final:
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-Depois criar a Release no GitHub usando a tag `v1.0.0`.
-
-## Documentacao complementar
+## 8) Documentacao complementar
 
 - `docs/architecture/cliente-servidor.md`
 - `docs/architecture/steps-cliente-servidor.md`
 - `docs/architecture/gcp-setup.md`
-- `docs/architecture/gcp-iam.md`
-- `docs/architecture/gcp-db.md`
 
-## Observacao sobre legado
-
-Existe codigo legado de interface desktop Tkinter (`app.py` e `livraria/views/`) mantido para contexto academico, mas o fluxo oficial da atividade e cliente-servidor via API + frontend web.
