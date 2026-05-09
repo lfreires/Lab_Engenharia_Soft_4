@@ -1,6 +1,7 @@
 ﻿import { useState } from 'react';
 import { useCart } from '../../contexts/CartContext';
 import { ordersService } from '../../api/services/orders.service';
+import { handleApiError } from '../../api/client';
 import { Navbar } from '../components/Navbar';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
@@ -65,9 +66,10 @@ export function Checkout() {
       setTimeout(() => {
         navigate('/books');
       }, 3000);
-    } catch {
-      setError('Erro ao finalizar pedido. Tente novamente.');
-      toast.error('Erro ao finalizar pedido');
+    } catch (err) {
+      const apiError = handleApiError(err);
+      setError(apiError.message || 'Erro ao finalizar pedido. Tente novamente.');
+      toast.error(apiError.message || 'Erro ao finalizar pedido');
     } finally {
       setIsCheckingOut(false);
     }
