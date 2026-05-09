@@ -2,12 +2,12 @@ import pytest
 
 
 @pytest.mark.integration
-def test_preview_discount_without_token_returns_403(client) -> None:
+def test_preview_discount_without_token_returns_401(client) -> None:
     resp = client.post(
         "/api/v1/orders/preview-discount",
         json={"cart_total": 100.0, "coupon_code": "DESC10"},
     )
-    assert resp.status_code == 403
+    assert resp.status_code == 401
 
 
 @pytest.mark.integration

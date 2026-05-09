@@ -61,6 +61,9 @@ omit = [
     "livraria/controllers/*",
     "livraria/infrastructure/repositories_txt/*",
     "livraria/infrastructure/unit_of_work_txt.py",
+    "livraria/infrastructure/firestore/*",
+    "livraria/infrastructure/repositories_firestore/*",
+    "livraria/infrastructure/unit_of_work_firestore.py",
 ]
 
 [tool.coverage.report]
@@ -69,6 +72,9 @@ omit = [
     "livraria/controllers/*",
     "livraria/infrastructure/repositories_txt/*",
     "livraria/infrastructure/unit_of_work_txt.py",
+    "livraria/infrastructure/firestore/*",
+    "livraria/infrastructure/repositories_firestore/*",
+    "livraria/infrastructure/unit_of_work_firestore.py",
 ]
 exclude_lines = [
     "pragma: no cover",

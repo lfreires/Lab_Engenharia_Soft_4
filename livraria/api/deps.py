@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from typing import Annotated
 
@@ -21,20 +21,23 @@ from livraria.infrastructure.repositories_sql.payment_repository import SqlPayme
 from livraria.infrastructure.repositories_sql.user_repository import SqlUserRepository
 from livraria.infrastructure.unit_of_work_sql import SqlUnitOfWork
 
-_bearer = HTTPBearer()
+_bearer = HTTPBearer(auto_error=False)
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(_bearer),
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
     settings: Settings = Depends(get_settings),
 ) -> str:
-    """Valida o token JWT e retorna o username. Lança 401 se inválido/expirado."""
+    """Validate JWT token and return username. Raises 401 when invalid."""
+    if credentials is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token ausente.")
+
     try:
         return decode_access_token(credentials.credentials, settings.jwt_secret)
     except pyjwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expirado.")
     except pyjwt.InvalidTokenError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido.")
 
 
 CurrentUser = Annotated[str, Depends(get_current_user)]

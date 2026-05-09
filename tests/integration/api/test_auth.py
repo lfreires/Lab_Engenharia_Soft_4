@@ -42,4 +42,4 @@ def test_login_wrong_password_401(client) -> None:
 @pytest.mark.integration
 def test_protected_route_without_token_401(client) -> None:
     resp = client.post("/api/v1/carts")
-    assert resp.status_code == 403  # HTTPBearer retorna 403 quando header ausente
+    assert resp.status_code == 401

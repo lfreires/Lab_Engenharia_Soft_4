@@ -2,9 +2,9 @@ import pytest
 
 
 @pytest.mark.integration
-def test_create_cart_without_token_returns_403(client) -> None:
+def test_create_cart_without_token_returns_401(client) -> None:
     resp = client.post("/api/v1/carts")
-    assert resp.status_code == 403
+    assert resp.status_code == 401
 
 
 @pytest.mark.integration
