@@ -1,29 +1,23 @@
-name: Build & Push Image
+name: Build and Push Image
 
-# Dispara apenas em push para main (após PRs aprovados e CI verde).
 on:
-  push:
-    branches: [main]
-    tags: ["v*.*.*"]
+  workflow_dispatch:
 
 env:
   REGISTRY: us-central1-docker.pkg.dev
-  IMAGE_PATH: us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/livraria/api
 
 jobs:
   build-push:
-    name: Build Docker image → Artifact Registry
+    name: Build Docker image to Artifact Registry
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
-      id-token: write  # Necessário para Workload Identity Federation
+      id-token: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Autenticação sem chave JSON — usa OIDC token do GitHub + WIF
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
@@ -33,22 +27,28 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
 
-      - name: Build image
+      - name: Build and push image
         run: |
+          PROJECT="${{ vars.GCP_PROJECT_ID || secrets.GCP_PROJECT_ID }}"
+          if [ -z "$PROJECT" ]; then
+            echo "GCP_PROJECT_ID nao definido (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+          IMAGE_PATH="us-central1-docker.pkg.dev/${PROJECT}/livraria/api"
           docker build \
-            --tag ${{ env.IMAGE_PATH }}:${{ github.sha }} \
-            --tag ${{ env.IMAGE_PATH }}:latest \
+            --tag "${IMAGE_PATH}:${{ github.sha }}" \
+            --tag "${IMAGE_PATH}:latest" \
             --label "git-commit=${{ github.sha }}" \
             --label "git-ref=${{ github.ref_name }}" \
             .
+          docker push "${IMAGE_PATH}:${{ github.sha }}"
+          docker push "${IMAGE_PATH}:latest"
 
-      - name: Push image
+      - name: Output image refs
         run: |
-          docker push ${{ env.IMAGE_PATH }}:${{ github.sha }}
-          docker push ${{ env.IMAGE_PATH }}:latest
-
-      - name: Output image digest
-        run: |
+          PROJECT="${{ vars.GCP_PROJECT_ID || secrets.GCP_PROJECT_ID }}"
+          IMAGE_PATH="us-central1-docker.pkg.dev/${PROJECT}/livraria/api"
           echo "Image pushed:"
-          echo "  ${{ env.IMAGE_PATH }}:${{ github.sha }}"
-          echo "  ${{ env.IMAGE_PATH }}:latest"
+          echo "  ${IMAGE_PATH}:${{ github.sha }}"
+          echo "  ${IMAGE_PATH}:latest"
