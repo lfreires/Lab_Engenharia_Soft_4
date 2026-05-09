@@ -7,7 +7,6 @@ on:
 
 env:
   REGION: us-central1
-  REPOSITORY_PATH: us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/livraria/api
 
 jobs:
   deploy-staging:
@@ -31,9 +30,14 @@ jobs:
 
       - name: Deploy staging service
         run: |
-          IMAGE="${{ env.REPOSITORY_PATH }}:${{ github.sha }}"
+          PROJECT="${{ vars.GCP_PROJECT_ID || secrets.GCP_PROJECT_ID }}"
+          if [ -z "$PROJECT" ]; then
+            echo "GCP_PROJECT_ID nao definido (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+          IMAGE="us-central1-docker.pkg.dev/${PROJECT}/livraria/api:${{ github.sha }}"
           SERVICE="livraria-api-staging"
-          PROJECT="${{ vars.GCP_PROJECT_ID }}"
           RUNTIME_SA="livraria-api-runtime@${PROJECT}.iam.gserviceaccount.com"
 
           gcloud run deploy "$SERVICE" \
@@ -72,9 +76,14 @@ jobs:
 
       - name: Deploy production service
         run: |
-          IMAGE="${{ env.REPOSITORY_PATH }}:${{ github.sha }}"
+          PROJECT="${{ vars.GCP_PROJECT_ID || secrets.GCP_PROJECT_ID }}"
+          if [ -z "$PROJECT" ]; then
+            echo "GCP_PROJECT_ID nao definido (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+          IMAGE="us-central1-docker.pkg.dev/${PROJECT}/livraria/api:${{ github.sha }}"
           SERVICE="livraria-api-prod"
-          PROJECT="${{ vars.GCP_PROJECT_ID }}"
           RUNTIME_SA="livraria-api-runtime@${PROJECT}.iam.gserviceaccount.com"
 
           gcloud run deploy "$SERVICE" \
